@@ -1,19 +1,22 @@
 import MongoStore from 'connect-mongo';
 
-export const PORT = 8080;
+import parseArgs from 'minimist';
+const args = parseArgs(process.argv.slice(2), { default: { PORT: 8080 } });
 
-export const PERSISTENCE_TYPE = 'MEMORY';
-// export const PERSISTENCE_TYPE = 'FILE';
-// export const PERSISTENCE_TYPE = 'MONGO';
+import dotenv from 'dotenv';
+dotenv.config();
+
+export const PORT = args.PORT;
+
+export const PERSISTENCE_TYPE = process.env.PERSISTENCE_TYPE || 'MEMORY';
 
 export const MONGO_DB = {
-    URL: 'mongodb+srv://tester:1234@cluster0.owruzid.mongodb.net/?retryWrites=true&w=majority',
+    URL: process.env.MONGODB_URL,
     config: {
         useNewUrlParser: true,
         useUnifiedTopology: true,
     },
 };
-
 
 export const SESSION_CONFIG = {
     store: MongoStore.create({
@@ -24,12 +27,10 @@ export const SESSION_CONFIG = {
         },
         ttl: 1000 * 60,
         autoRemove: 'native',
-        
     }),
     cookie: { maxAge: 1000 * 60, httpOnly: false },
     secret: 'secret',
     resave: true,
     saveUninitialized: false,
     rolling: true,
-    
-}
+};
